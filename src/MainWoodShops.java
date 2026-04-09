@@ -2,8 +2,30 @@ import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
+/**
+ * Clase principal del sistema WoodShops.
+ * <p>
+ * Contiene el método {@link #main(String[])} que arranca la aplicación,
+ * el método de carga de datos iniciales y los métodos que implementan las
+ * opciones del menú interactivo: añadir productos, listar por tipo y
+ * consultar stock por código.
+ * </p>
+ *
+ * @author Pol Valle Montes
+ * @version 1.0
+ */
 public class MainWoodShops {
 
+    /**
+     * Carga un conjunto de datos de ejemplo en el sistema.
+     * <p>
+     * Crea dos proveedores, tres productos (un {@link Tablero}, un {@link Barniz}
+     * y un {@link Articulo}), dos tiendas y añade los productos a cada tienda con
+     * precio y stock diferenciados.
+     * </p>
+     *
+     * @return objeto {@link WoodShops} con los datos iniciales cargados
+     */
     public static WoodShops cargaDatosIniciales() {
         // 2 objetos Proveedor
         Proveedor prov1 = new Proveedor("11111111A", "Maderas del Norte");
@@ -35,6 +57,15 @@ public class MainWoodShops {
         return woodShops;
     }
 
+    /**
+     * Punto de entrada de la aplicación.
+     * <p>
+     * Carga los datos iniciales y muestra un menú interactivo con las opciones
+     * disponibles hasta que el usuario decide salir.
+     * </p>
+     *
+     * @param args argumentos de la línea de comandos (no se utilizan)
+     */
     public static void main(String[] args) {
         WoodShops empresa = cargaDatosIniciales();
         Scanner scanner = new Scanner(System.in);
@@ -79,6 +110,16 @@ public class MainWoodShops {
         scanner.close();
     }
 
+    /**
+     * Permite al usuario añadir un nuevo producto al inventario de una tienda.
+     * <p>
+     * Solicita por consola el tipo de producto, sus datos específicos, el precio
+     * de venta y el stock inicial, y lo añade al inventario de la tienda elegida.
+     * </p>
+     *
+     * @param empresa objeto {@link WoodShops} con las tiendas disponibles
+     * @param scanner objeto {@link Scanner} para leer la entrada del usuario
+     */
     private static void anadirProducto(WoodShops empresa, Scanner scanner) {
         int indiceTienda = seleccionarTienda(empresa, scanner);
         if (indiceTienda == -1) return;
@@ -88,7 +129,7 @@ public class MainWoodShops {
         System.out.println("\n¿Qué tipo de producto quieres añadir?");
         System.out.println("1. Tablero\n2. Barniz\n3. Artículo");
         System.out.print("Elige una opción: ");
-        
+
         int tipoProducto = -1;
         try {
             tipoProducto = scanner.nextInt();
@@ -103,7 +144,7 @@ public class MainWoodShops {
         String codigo = scanner.nextLine();
         System.out.print("Introduce la descripción: ");
         String descripcion = scanner.nextLine();
-        
+
         System.out.print("Introduce el NIF del proveedor: ");
         String nifProv = scanner.nextLine();
         System.out.print("Introduce el nombre del proveedor: ");
@@ -121,23 +162,23 @@ public class MainWoodShops {
                 System.out.println("Tipos de tablero: 1. AGLOMERADO | 2. CONTRACHAPADO | 3. MDF");
                 int tipoIndex = scanner.nextInt();
                 TipoTablero tipo = TipoTablero.values()[tipoIndex - 1];
-                
+
                 nuevoProducto = new Tablero(codigo, descripcion, proveedor, altura, anchura, tipo);
-                
+
             } else if (tipoProducto == 2) { // Barniz
                 System.out.print("Mililitros: ");
                 int ml = scanner.nextInt();
                 System.out.println("Colores: 1. INCOLORO | 2. CAOBA | 3. NOGAL");
                 int colorIndex = scanner.nextInt();
                 ColorBarniz color = ColorBarniz.values()[colorIndex - 1];
-                
+
                 nuevoProducto = new Barniz(codigo, descripcion, proveedor, ml, color);
-                
+
             } else if (tipoProducto == 3) { // Artículo
                 System.out.println("Tipos de artículo: 1. ESTANTERIA | 2. MESA | 3. SILLA | 4. ARMARIO");
                 int tipoIndex = scanner.nextInt();
                 TipoArticulo tipo = TipoArticulo.values()[tipoIndex - 1];
-                
+
                 nuevoProducto = new Articulo(codigo, descripcion, proveedor, tipo);
             } else {
                 System.out.println("Tipo de producto no reconocido.");
@@ -152,7 +193,7 @@ public class MainWoodShops {
 
             ProductoTienda pt = new ProductoTienda(nuevoProducto, precio, stock);
             tiendaSeleccionada.getInventario().add(pt);
-            
+
             System.out.println("Producto añadido con éxito al inventario de " + tiendaSeleccionada.getNombre());
 
         } catch (InputMismatchException | ArrayIndexOutOfBoundsException e) {
@@ -161,6 +202,16 @@ public class MainWoodShops {
         }
     }
 
+    /**
+     * Lista los productos de una tienda filtrando por tipo (tablero, barniz o artículo).
+     * <p>
+     * Solicita al usuario que seleccione una tienda y un tipo de producto, y muestra
+     * por consola todos los registros de inventario que coincidan con el filtro.
+     * </p>
+     *
+     * @param empresa objeto {@link WoodShops} con las tiendas disponibles
+     * @param scanner objeto {@link Scanner} para leer la entrada del usuario
+     */
     private static void listarProductos(WoodShops empresa, Scanner scanner) {
         int indiceTienda = seleccionarTienda(empresa, scanner);
         if (indiceTienda == -1) return;
@@ -194,35 +245,54 @@ public class MainWoodShops {
                 encontrado = true;
             }
         }
-        
+
         if (!encontrado) {
             System.out.println("No se han encontrado productos de ese tipo.");
         }
     }
 
+    /**
+     * Muestra el stock de un producto en todas las tiendas en las que esté disponible.
+     * <p>
+     * Solicita un código de producto y recorre todas las tiendas buscando coincidencias.
+     * Por cada tienda donde exista el producto, muestra el nombre de la tienda, las
+     * unidades en stock y el precio de venta.
+     * </p>
+     *
+     * @param empresa objeto {@link WoodShops} con las tiendas disponibles
+     * @param scanner objeto {@link Scanner} para leer la entrada del usuario
+     */
     private static void mostrarStock(WoodShops empresa, Scanner scanner) {
         System.out.print("\nIntroduce el código del producto a buscar: ");
         String codigo = scanner.nextLine();
 
         boolean encontradoEnAlguna = false;
         System.out.println("--- Resultados de stock ---");
-        
+
         for (Tienda t : empresa.getTiendas()) {
             for (ProductoTienda pt : t.getInventario()) {
                 if (pt.getProducto().getCodigo().equalsIgnoreCase(codigo)) {
                     System.out.println("- " + t.getNombre() + ": " + pt.getStock() + " unidades (Precio: " + pt.getPrecioVenta() + ")");
                     encontradoEnAlguna = true;
-                    // Suponemos que un código solo aparece una vez en cada tienda
-                    break;
+                    break; // Un código solo aparece una vez por tienda
                 }
             }
         }
-        
+
         if (!encontradoEnAlguna) {
             System.out.println("El código introducido no existe en el sistema.");
         }
     }
 
+    /**
+     * Muestra por consola la lista de tiendas disponibles y devuelve el índice
+     * de la tienda seleccionada por el usuario.
+     *
+     * @param empresa objeto {@link WoodShops} con las tiendas disponibles
+     * @param scanner objeto {@link Scanner} para leer la entrada del usuario
+     * @return índice (base 0) de la tienda seleccionada, o {@code -1} si la
+     *         selección no es válida o no hay tiendas registradas
+     */
     private static int seleccionarTienda(WoodShops empresa, Scanner scanner) {
         ArrayList<Tienda> tiendas = empresa.getTiendas();
         if (tiendas.isEmpty()) {
@@ -235,7 +305,7 @@ public class MainWoodShops {
             System.out.println((i + 1) + ". " + tiendas.get(i).getNombre());
         }
         System.out.print("Elige una opción: ");
-        
+
         try {
             int opcion = scanner.nextInt();
             scanner.nextLine(); // Limpiar
