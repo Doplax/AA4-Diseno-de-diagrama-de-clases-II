@@ -68,10 +68,12 @@ public class MainWoodShops {
         woodShops.getClientes().add(new ClienteWoodFriend("44444444D", "Ana López", "WF-0001"));
         woodShops.getClientes().add(new ClienteProfesional("55555555E", "Muebles Torres SL", 0.10));
 
-        // Ticket inicial de ejemplo
+        // Ticket inicial de ejemplo (con descuento del cliente profesional)
         ArrayList<LineaTicket> lineas = new ArrayList<>();
         lineas.add(new LineaTicket(pt1Tablero, 4));
+        pt1Tablero.setStock(pt1Tablero.getStock() - 4);
         lineas.add(new LineaTicket(pt1Articulo, 1));
+        pt1Articulo.setStock(pt1Articulo.getStock() - 1);
         Ticket ticketInicial = new Ticket(
                 siguienteNumeroTicket++,
                 LocalDate.now().minusDays(3),
@@ -196,25 +198,22 @@ public class MainWoodShops {
                 double altura = scanner.nextDouble();
                 System.out.print("Anchura: ");
                 double anchura = scanner.nextDouble();
-                System.out.println("Tipos de tablero: 1. AGLOMERADO | 2. CONTRACHAPADO | 3. MDF");
-                int tipoIndex = scanner.nextInt();
-                TipoTablero tipo = TipoTablero.values()[tipoIndex - 1];
+                TipoTablero tipo = leerEnum(scanner, "Tipo de tablero", TipoTablero.values());
+                if (tipo == null) return;
 
                 nuevoProducto = new Tablero(codigo, descripcion, proveedor, altura, anchura, tipo);
 
             } else if (tipoProducto == 2) {
                 System.out.print("Mililitros: ");
                 int ml = scanner.nextInt();
-                System.out.println("Colores: 1. INCOLORO | 2. CAOBA | 3. NOGAL");
-                int colorIndex = scanner.nextInt();
-                ColorBarniz color = ColorBarniz.values()[colorIndex - 1];
+                ColorBarniz color = leerEnum(scanner, "Color del barniz", ColorBarniz.values());
+                if (color == null) return;
 
                 nuevoProducto = new Barniz(codigo, descripcion, proveedor, ml, color);
 
             } else if (tipoProducto == 3) {
-                System.out.println("Tipos de artículo: 1. ESTANTERIA | 2. MESA | 3. SILLA | 4. ARMARIO");
-                int tipoIndex = scanner.nextInt();
-                TipoArticulo tipo = TipoArticulo.values()[tipoIndex - 1];
+                TipoArticulo tipo = leerEnum(scanner, "Tipo de artículo", TipoArticulo.values());
+                if (tipo == null) return;
 
                 nuevoProducto = new Articulo(codigo, descripcion, proveedor, tipo);
             } else {
@@ -228,15 +227,85 @@ public class MainWoodShops {
             int stock = scanner.nextInt();
             scanner.nextLine();
 
+            if (existeCodigoEnTienda(tiendaSeleccionada, codigo)) {
+                System.out.println("Ya existe un producto con código '" + codigo
+                        + "' en " + tiendaSeleccionada.getNombre() + ". Operación cancelada.");
+                return;
+            }
+
             ProductoTienda pt = new ProductoTienda(nuevoProducto, precio, stock);
             tiendaSeleccionada.getInventario().add(pt);
 
             System.out.println("Producto añadido con éxito al inventario de " + tiendaSeleccionada.getNombre());
 
-        } catch (InputMismatchException | ArrayIndexOutOfBoundsException e) {
+        } catch (InputMismatchException e) {
             System.out.println("Datos introducidos no válidos. Operación cancelada.");
             scanner.nextLine();
         }
+    }
+
+    /**
+     * Solicita por consola un valor de un tipo enumerado, mostrando el menú de
+     * opciones de forma dinámica a partir de los valores del enum y validando
+     * que la selección esté dentro de rango.
+     *
+     * @param scanner objeto {@link Scanner} para leer la entrada del usuario
+     * @param titulo  título a mostrar antes de las opciones
+     * @param valores valores posibles del enum
+     * @param <E>     tipo enumerado
+     * @return valor seleccionado, o {@code null} si la entrada no es válida
+     */
+    private static <E extends Enum<E>> E leerEnum(Scanner scanner, String titulo, E[] valores) {
+        System.out.println(titulo + ":");
+        for (int i = 0; i < valores.length; i++) {
+            System.out.println("  " + (i + 1) + ". " + valores[i]);
+        }
+        System.out.print("Elige una opción: ");
+        try {
+            int idx = scanner.nextInt();
+            scanner.nextLine();
+            if (idx < 1 || idx > valores.length) {
+                System.out.println("Opción fuera de rango.");
+                return null;
+            }
+            return valores[idx - 1];
+        } catch (InputMismatchException e) {
+            System.out.println("Entrada inválida.");
+            scanner.nextLine();
+            return null;
+        }
+    }
+
+    /**
+     * Indica si la tienda dada ya contiene un producto con el código indicado.
+     *
+     * @param tienda tienda a inspeccionar
+     * @param codigo código de producto a buscar
+     * @return {@code true} si ya existe un producto con ese código
+     */
+    private static boolean existeCodigoEnTienda(Tienda tienda, String codigo) {
+        for (ProductoTienda pt : tienda.getInventario()) {
+            if (pt.getProducto().getCodigo().equalsIgnoreCase(codigo)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Indica si la empresa ya tiene un cliente registrado con el NIF indicado.
+     *
+     * @param empresa empresa cuyos clientes se inspeccionan
+     * @param nif     NIF a buscar
+     * @return {@code true} si ya existe un cliente con ese NIF
+     */
+    private static boolean existeNifCliente(WoodShops empresa, String nif) {
+        for (Cliente c : empresa.getClientes()) {
+            if (c.getNif() != null && c.getNif().equalsIgnoreCase(nif)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -251,8 +320,11 @@ public class MainWoodShops {
 
         Tienda tiendaSeleccionada = empresa.getTiendas().get(indiceTienda);
 
+        String[] categorias = { "Tablero", "Barniz", "Articulo" };
         System.out.println("\n¿Qué tipo de producto quieres listar?");
-        System.out.println("1. Tablero\n2. Barniz\n3. Artículo");
+        for (int i = 0; i < categorias.length; i++) {
+            System.out.println((i + 1) + ". " + categorias[i]);
+        }
         System.out.print("Elige una opción: ");
         int tipoFiltro;
         try {
@@ -263,17 +335,16 @@ public class MainWoodShops {
             scanner.nextLine();
             return;
         }
+        if (tipoFiltro < 1 || tipoFiltro > categorias.length) {
+            System.out.println("Opción fuera de rango.");
+            return;
+        }
+        String categoriaBuscada = categorias[tipoFiltro - 1];
 
         System.out.println("\n--- Productos encontrados ---");
         boolean encontrado = false;
         for (ProductoTienda pt : tiendaSeleccionada.getInventario()) {
-            if (tipoFiltro == 1 && pt.getProducto() instanceof Tablero) {
-                System.out.println(pt);
-                encontrado = true;
-            } else if (tipoFiltro == 2 && pt.getProducto() instanceof Barniz) {
-                System.out.println(pt);
-                encontrado = true;
-            } else if (tipoFiltro == 3 && pt.getProducto() instanceof Articulo) {
+            if (pt.getProducto().getCategoria().equalsIgnoreCase(categoriaBuscada)) {
                 System.out.println(pt);
                 encontrado = true;
             }
@@ -337,6 +408,11 @@ public class MainWoodShops {
         System.out.print("Nombre: ");
         String nombre = scanner.nextLine();
 
+        if (existeNifCliente(empresa, nif)) {
+            System.out.println("Ya existe un cliente registrado con NIF '" + nif + "'. Operación cancelada.");
+            return;
+        }
+
         try {
             if (tipo == 1) {
                 System.out.print("Descuento (ej. 0.15 para 15%): ");
@@ -378,11 +454,9 @@ public class MainWoodShops {
             StringBuilder sb = new StringBuilder();
             sb.append("[").append(c.getTipo()).append("] ")
                     .append(c.getNombre()).append(" - NIF: ").append(c.getNif());
-            if (c instanceof ClienteProfesional) {
-                sb.append(" - Descuento: ")
-                        .append(String.format("%.0f%%", ((ClienteProfesional) c).getDescuento() * 100));
-            } else if (c instanceof ClienteWoodFriend) {
-                sb.append(" - Socio: ").append(((ClienteWoodFriend) c).getCodigoSocio());
+            String extra = c.getDetalleExtra();
+            if (extra != null && !extra.isEmpty()) {
+                sb.append(" - ").append(extra);
             }
             System.out.println(sb);
         }

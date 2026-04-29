@@ -95,6 +95,20 @@ public abstract class Cliente {
     public abstract String getTipo();
 
     /**
+     * Devuelve la información extra propia de cada tipo de cliente
+     * (descuento, código de socio, etc.) que se mostrará en los listados.
+     * <p>
+     * La clase base devuelve una cadena vacía para que los clientes sin datos
+     * adicionales no aporten información extra al listado.
+     * </p>
+     *
+     * @return cadena con la información extra a mostrar
+     */
+    public String getDetalleExtra() {
+        return "";
+    }
+
+    /**
      * Devuelve una representación en cadena del cliente.
      *
      * @return cadena con NIF, nombre y tipo de cliente

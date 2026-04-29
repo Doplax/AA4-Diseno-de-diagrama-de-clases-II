@@ -61,4 +61,15 @@ public class ClienteProfesional extends Cliente {
     public String getTipo() {
         return "Profesional";
     }
+
+    /**
+     * Devuelve el detalle extra del cliente para mostrar en los listados:
+     * el descuento aplicable.
+     *
+     * @return cadena con el descuento del cliente
+     */
+    @Override
+    public String getDetalleExtra() {
+        return "Descuento: " + String.format("%.0f%%", descuento * 100);
+    }
 }

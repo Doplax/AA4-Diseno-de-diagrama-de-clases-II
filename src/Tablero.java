@@ -98,6 +98,16 @@ public class Tablero extends Producto {
     }
 
     /**
+     * Devuelve la categoría del producto.
+     *
+     * @return la cadena {@code "Tablero"}
+     */
+    @Override
+    public String getCategoria() {
+        return "Tablero";
+    }
+
+    /**
      * Devuelve una representación en cadena del tablero.
      *
      * @return cadena con todos los atributos del tablero

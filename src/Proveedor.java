@@ -6,12 +6,12 @@
  * </p>
  *
  * @author Pol Valle Montes
- * @version 1.0
+ * @version 1.1
  */
 public class Proveedor {
 
     /** NIF (Número de Identificación Fiscal) del proveedor. */
-    private String NIF;
+    private String nif;
 
     /** Nombre o razón social del proveedor. */
     private String nombre;
@@ -25,11 +25,11 @@ public class Proveedor {
     /**
      * Constructor con todos los parámetros.
      *
-     * @param NIF    NIF del proveedor
+     * @param nif    NIF del proveedor
      * @param nombre nombre del proveedor
      */
-    public Proveedor(String NIF, String nombre) {
-        this.NIF = NIF;
+    public Proveedor(String nif, String nombre) {
+        this.nif = nif;
         this.nombre = nombre;
     }
 
@@ -38,17 +38,17 @@ public class Proveedor {
      *
      * @return NIF del proveedor
      */
-    public String getNIF() {
-        return NIF;
+    public String getNif() {
+        return nif;
     }
 
     /**
      * Establece el NIF del proveedor.
      *
-     * @param NIF nuevo NIF del proveedor
+     * @param nif nuevo NIF del proveedor
      */
-    public void setNIF(String NIF) {
-        this.NIF = NIF;
+    public void setNif(String nif) {
+        this.nif = nif;
     }
 
     /**
@@ -77,7 +77,7 @@ public class Proveedor {
     @Override
     public String toString() {
         return "Proveedor{" +
-                "NIF='" + NIF + '\'' +
+                "nif='" + nif + '\'' +
                 ", nombre='" + nombre + '\'' +
                 '}';
     }

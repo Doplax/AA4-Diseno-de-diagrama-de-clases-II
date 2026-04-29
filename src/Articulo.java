@@ -52,6 +52,16 @@ public class Articulo extends Producto {
     }
 
     /**
+     * Devuelve la categoría del producto.
+     *
+     * @return la cadena {@code "Articulo"}
+     */
+    @Override
+    public String getCategoria() {
+        return "Articulo";
+    }
+
+    /**
      * Devuelve una representación en cadena del artículo.
      *
      * @return cadena con todos los atributos del artículo

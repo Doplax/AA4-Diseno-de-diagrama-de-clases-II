@@ -75,6 +75,16 @@ public class Barniz extends Producto {
     }
 
     /**
+     * Devuelve la categoría del producto.
+     *
+     * @return la cadena {@code "Barniz"}
+     */
+    @Override
+    public String getCategoria() {
+        return "Barniz";
+    }
+
+    /**
      * Devuelve una representación en cadena del barniz.
      *
      * @return cadena con todos los atributos del barniz

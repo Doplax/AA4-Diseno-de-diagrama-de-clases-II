@@ -93,6 +93,17 @@ public abstract class Producto {
     }
 
     /**
+     * Devuelve la categoría del producto (Tablero, Barniz, Artículo, ...).
+     * <p>
+     * Cada subclase concreta debe devolver la cadena que la identifica.
+     * Permite filtrar y agrupar productos sin depender de {@code instanceof}.
+     * </p>
+     *
+     * @return nombre de la categoría del producto
+     */
+    public abstract String getCategoria();
+
+    /**
      * Devuelve una representación en cadena del producto.
      *
      * @return cadena con los atributos del producto

@@ -60,4 +60,15 @@ public class ClienteWoodFriend extends Cliente {
     public String getTipo() {
         return "WoodFriend";
     }
+
+    /**
+     * Devuelve el detalle extra del cliente para mostrar en los listados:
+     * el código de socio.
+     *
+     * @return cadena con el código de socio
+     */
+    @Override
+    public String getDetalleExtra() {
+        return "Socio: " + codigoSocio;
+    }
 }
