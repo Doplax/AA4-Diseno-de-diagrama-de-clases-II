@@ -149,8 +149,27 @@ public class MainWoodShops {
                 default:
                     System.out.println("Opción no válida. Inténtalo de nuevo.");
             }
+
+            if (!salir) {
+                pausarYLimpiar(scanner);
+            }
         }
         scanner.close();
+    }
+
+    /**
+     * Espera a que el usuario pulse Enter y a continuación limpia la consola
+     * mediante códigos ANSI. Se invoca al final de cada acción del menú para
+     * que el resultado anterior quede visible hasta que el usuario decida
+     * continuar.
+     *
+     * @param scanner objeto {@link Scanner} usado para leer la pulsación de Enter
+     */
+    private static void pausarYLimpiar(Scanner scanner) {
+        System.out.print("\nPulsa Enter para continuar...");
+        scanner.nextLine();
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
     }
 
     /**
